@@ -6,7 +6,7 @@ import (
 
 	"time"
 
-	"github.com/alaref-codes/basic-auth/api/database"
+	"github.com/alaref-codes/basic-auth/database"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"

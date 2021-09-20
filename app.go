@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/alaref-codes/basic-auth/api/user"
-	"github.com/alaref-codes/basic-auth/api/database"
+	"github.com/alaref-codes/basic-auth/database"
+	"github.com/alaref-codes/basic-auth/user"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/driver/sqlite"
 
