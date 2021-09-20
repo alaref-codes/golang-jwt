@@ -1,6 +1,6 @@
 module github.com/alaref-codes/basic-auth
 
-go 1.13
+go 1.17
 
 require (
 	github.com/gofiber/fiber/v2 v2.18.0
