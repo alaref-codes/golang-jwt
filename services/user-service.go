@@ -1,9 +1,8 @@
-package user
+package services
 
 import (
 	"fmt"
 	"regexp"
-
 	"time"
 
 	"github.com/alaref-codes/basic-auth/database"
@@ -12,16 +11,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type User struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-// Creating a user : complete
 func CreateUser(c *fiber.Ctx) error {
 	db := database.DBConn
 	emailRegex := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
-	var user User
+	var user database.User
 	err := c.BodyParser(&user)
 	if err != nil {
 		return fiber.ErrInternalServerError
@@ -34,22 +27,22 @@ func CreateUser(c *fiber.Ctx) error {
 		return fiber.NewError(503, "Not a valid email")
 	}
 	hash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
-	user = User{
+	user = database.User{
 		Email:    user.Email,
 		Password: string(hash),
 	}
 	db.Create(&user)
 
 	return c.JSON(fiber.Map{
-		"message": "User created successfully",
-		"users":   user,
+		"message":      "User created successfully",
+		"Created user": user,
 	})
 }
 
 func Signin(c *fiber.Ctx) error {
 	db := database.DBConn
-	var user User
-	var newUser User
+	var user database.User
+	var newUser database.User
 	err := c.BodyParser(&newUser)
 	if err != nil {
 		return fiber.ErrInternalServerError
@@ -82,7 +75,7 @@ func Signin(c *fiber.Ctx) error {
 		"message": "Auth success",
 	})
 
-	// return c.SendString("Auth success")
+	// return c.SendString("Auth success")user
 }
 
 // Getting users : complete
@@ -91,7 +84,7 @@ func GetUsers(c *fiber.Ctx) error {
 	claims := user.Claims.(jwt.MapClaims)
 	email := claims["email"].(string)
 	db := database.DBConn
-	var users []User
+	var users []database.User
 	db.Find(&users)
 	return c.JSON(fiber.Map{
 		"message": fmt.Sprintf("Welcome user %s", email),
@@ -102,7 +95,7 @@ func GetUsers(c *fiber.Ctx) error {
 func DeleteUser(c *fiber.Ctx) error {
 	db := database.DBConn
 	email := c.Params("email")
-	var user User
+	var user database.User
 	result := db.Where("email = ?", email).Find(&user)
 
 	if result.RowsAffected == 0 {
